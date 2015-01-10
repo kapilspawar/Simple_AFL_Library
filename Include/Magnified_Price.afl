@@ -1,0 +1,23 @@
+_SECTION_BEGIN("Magnified Price");
+	//Magfied Market Price
+	precision = 2;
+	if(StrFind(Name(), "INR")) {
+		precision = 4;
+	}
+
+	FS = Param("Font Size", 24, 10, 100, 5);
+	GfxSelectFont("Tahoma", FS, 900, True); 
+	GfxSetBkMode( colorWhite );  
+	GfxSetTextColor( ParamColor("Color",colorGreen) ); 
+	Hor = Param("Horizontal Position", 840, 100, 1200, 100);
+	Ver = Param("Vertical Position", 1, 10, 830, 10);
+	formatWithPrecision = 1 + precision * 0.1;
+	GfxTextOut(WriteVal(C, formatWithPrecision, True), Hor, Ver);
+	YC = TimeFrameGetPrice("C", inDaily, -1);
+	DD = Prec(C-YC, precision);
+	xx = Prec((DD/YC)*100, 2);
+	GfxSelectFont("Tahoma", 12, 700, True ); 
+	GfxSetBkMode( colorBlack );  
+	GfxSetTextColor(ParamColor("Color", colorYellow) ); 
+	GfxTextOut("" + DD + "  ("+xx+"%)", Hor, Ver + 35 );
+_SECTION_END();

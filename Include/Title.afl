@@ -1,0 +1,10 @@
+titleFirstRow = Name() + " - " + Interval(2) + " - " + Date()
+				+ ", " + "Open - " + WriteVal(Open, formatWithPrecision, True)
+				+ ", " + "High - " + WriteVal(High, formatWithPrecision, True)
+				+ ", " + "Low - " + WriteVal(Low, formatWithPrecision, True)
+				+ ", " + "Close - " + WriteVal(Close, formatWithPrecision, True)
+				+ ", " + "Vol - " + WriteVal(Volume, 1.0, True)
+				;
+//_N( Title = StrFormat( "{{NAME}} - {{INTERVAL}} {{DATE}} \nOpen %g \nHigh %g
+//\nLow %g \nClose %g (%.1f%%) {{VALUES}}", O, H, L, C, SelectedValue( ROC( C, 1 )
+//) ) );

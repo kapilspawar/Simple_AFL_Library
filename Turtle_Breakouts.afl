@@ -1,0 +1,71 @@
+#include <MagnifiedPrice.afl>
+#include <LotSizes.afl>	
+#include <Title.afl>	
+system = 1; //Use 1 or 2 for shorter and longer term trend following
+
+if (system == 1) {
+	shortPeriod = 10;
+	longPeriod = 20;
+} else if (system == 2) {
+	shortPeriod = 20;
+	longPeriod = 50;
+}
+
+printf(Now() + " ");
+endOfBar = -1;//0 for completeBar (after EOD on daily) or -1 for incompleteBar (during trading hours on daily) and running analysis
+swingHighForEntry = Ref(HHV(H, shortPeriod), endOfBar);
+swingLowForEntry = Ref(LLV(L, shortPeriod), endOfBar);
+swingLowForExit = Ref(LLV(L, longPeriod), endOfBar);
+swingHighForExit = Ref(HHV(H, longPeriod), endOfBar);
+
+Bullish = C > swingHighForEntry;
+Bearish = C < swingLowForEntry;
+BullishExit = C < swingLowForExit;
+BearishExit = C > swingHighForExit;
+
+Buy = Bullish;
+Sell = BullishExit;
+Short = Bearish;
+Cover = BearishExit;
+
+Buy = ExRem(Buy, Sell);
+Sell = ExRem(Sell, Buy);
+Short = ExRem(Short, Cover);
+Cover = ExRem(Cover, Short);
+
+Filter = Bullish OR Bearish;
+
+SetChartOptions(0,chartShowArrows|chartShowDates);
+
+dynamicColor = IIf(Bullish, colorGreen, IIf(Bearish, colorRed, colorDefault));
+PlotOHLC(O, H, L, C, "Price", colorDefault, styleBar, Null, Null, 0, 0, 1);
+Plot(swingHighForEntry, "Bullish Entry", colorGreen, styleLine, Null, Null, 0, 0, -1);
+Plot(swingLowForExit, "Bullish Exit", colorRed, styleDashed, Null, Null, 0, 0, -1);
+Plot(swingLowForEntry, "Bearish Entry", colorRed, styleLine, Null, Null, 0, 0, -1);
+Plot(swingHighForExit, "Bearish Exit", colorGreen, styleDashed, Null, Null, 0, 0, -1);
+//Plot(Volume, "Volume", colorDefault, styleBar);
+
+volatility = EMA(ATR(1), 20);
+entry = IIf(Bullish, swingHighForEntry, IIf(Bearish, swingLowForEntry, Null));
+exit = IIf(Bullish, swingLowForExit, IIf(Bearish, swingHighForExit, Null));
+twoNStop = IIf(Bullish, C - 2 * volatility, IIf(Bearish, C + 2 * volatility, 0));
+
+Trend = WriteIf(Bullish, "Bullish", WriteIf(Bearish, "Bearish", "No Trend"));
+AddColumn(Close, "Close", formatWithPrecision, colorDefault, dynamicColor);
+AddTextColumn(Trend, "Trend");
+AddColumn(entry, "Entry", formatWithPrecision, colorDefault, dynamicColor);
+AddColumn(exit, "Exit", formatWithPrecision, colorDefault, dynamicColor);
+AddColumn(volatility, "20 period EMA ATR", formatWithPrecision, colorDefault, colorDefault);
+AddColumn(getLotSize(Name()), "Lot Size", 1.0, colorDefault, colorDefault);
+AddColumn(volatility * 2 * getLotSize(Name()), "Risk", 1.0, colorDefault, colorDefault);
+AddColumn(twoNStop, "2N Stop", formatWithPrecision, colorDefault, dynamicColor);
+
+titleSecondRow = "\n" 
+					+ "Bullish Entry - " + WriteVal(swingHighForEntry, formatWithPrecision, True)
+					+ ", Bullish Exit - " + WriteVal(swingLowForExit, formatWithPrecision, True)
+					+ ", Bearish Entry - " + WriteVal(swingLowForEntry, formatWithPrecision, True)
+					+ ", Bearish Exit - " + WriteVal(swingHighForExit, formatWithPrecision, True)
+					+ ", N - " + WriteVal(volatility, formatWithPrecision, True)
+					+ ", 2N - " + WriteVal(2 * volatility, formatWithPrecision, True);
+
+Title = titleFirstRow + titleSecondRow;
