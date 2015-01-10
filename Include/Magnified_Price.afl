@@ -1,20 +1,38 @@
-_SECTION_BEGIN("Magnified Price");
-	//Magfied Market Price
+//Copyright 2015 Kapil Singh Pawar (kpawar@gmail.com)
+
+//Licensed under the Apache License, Version 2.0 (the "License");
+//you may not use this file except in compliance with the License.
+//You may obtain a copy of the License at
+
+//    http://www.apache.org/licenses/LICENSE-2.0
+
+//Unless required by applicable law or agreed to in writing, software
+//distributed under the License is distributed on an "AS IS" BASIS,
+//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//See the License for the specific language governing permissions and
+//under the License.
+function getPrecision() {
 	precision = 2;
 	if(StrFind(Name(), "INR")) {
 		precision = 4;
 	}
+	return precision;
+}
 
+function getFormatWithPrecision() {
+	return (1 + getPrecision() * 0.1);
+}
+
+_SECTION_BEGIN("Magnified Price");
 	FS = Param("Font Size", 24, 10, 100, 5);
 	GfxSelectFont("Tahoma", FS, 900, True); 
 	GfxSetBkMode( colorWhite );  
 	GfxSetTextColor( ParamColor("Color",colorGreen) ); 
 	Hor = Param("Horizontal Position", 840, 100, 1200, 100);
 	Ver = Param("Vertical Position", 1, 10, 830, 10);
-	formatWithPrecision = 1 + precision * 0.1;
-	GfxTextOut(WriteVal(C, formatWithPrecision, True), Hor, Ver);
+	GfxTextOut(WriteVal(C, getFormatWithPrecision(), True), Hor, Ver);
 	YC = TimeFrameGetPrice("C", inDaily, -1);
-	DD = Prec(C-YC, precision);
+	DD = Prec(C-YC, getPrecision());
 	xx = Prec((DD/YC)*100, 2);
 	GfxSelectFont("Tahoma", 12, 700, True ); 
 	GfxSetBkMode( colorBlack );  

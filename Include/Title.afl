@@ -1,10 +1,21 @@
+//Copyright 2015 Kapil Singh Pawar (kpawar@gmail.com)
+
+//Licensed under the Apache License, Version 2.0 (the "License");
+//you may not use this file except in compliance with the License.
+//You may obtain a copy of the License at
+
+//    http://www.apache.org/licenses/LICENSE-2.0
+
+//Unless required by applicable law or agreed to in writing, software
+//distributed under the License is distributed on an "AS IS" BASIS,
+//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//See the License for the specific language governing permissions and
+//under the License.
+
 titleFirstRow = Name() + " - " + Interval(2) + " - " + Date()
-				+ ", " + "Open - " + WriteVal(Open, formatWithPrecision, True)
-				+ ", " + "High - " + WriteVal(High, formatWithPrecision, True)
-				+ ", " + "Low - " + WriteVal(Low, formatWithPrecision, True)
-				+ ", " + "Close - " + WriteVal(Close, formatWithPrecision, True)
+				+ ", " + "Open - " + WriteVal(Open, getFormatWithPrecision(), True)
+				+ ", " + "High - " + WriteVal(High, getFormatWithPrecision(), True)
+				+ ", " + "Low - " + WriteVal(Low, getFormatWithPrecision(), True)
+				+ ", " + "Close - " + WriteVal(Close, getFormatWithPrecision(), True)
 				+ ", " + "Vol - " + WriteVal(Volume, 1.0, True)
 				;
-//_N( Title = StrFormat( "{{NAME}} - {{INTERVAL}} {{DATE}} \nOpen %g \nHigh %g
-//\nLow %g \nClose %g (%.1f%%) {{VALUES}}", O, H, L, C, SelectedValue( ROC( C, 1 )
-//) ) );

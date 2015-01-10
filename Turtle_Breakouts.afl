@@ -1,5 +1,19 @@
-#include <MagnifiedPrice.afl>
-#include <LotSizes.afl>	
+//Copyright 2015 Kapil Singh Pawar (kpawar@gmail.com)
+
+//Licensed under the Apache License, Version 2.0 (the "License");
+//you may not use this file except in compliance with the License.
+//You may obtain a copy of the License at
+
+//    http://www.apache.org/licenses/LICENSE-2.0
+
+//Unless required by applicable law or agreed to in writing, software
+//distributed under the License is distributed on an "AS IS" BASIS,
+//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//See the License for the specific language governing permissions and
+//under the License.
+_SECTION_BEGIN("Turle Breakouts");
+#include <Magnified_Price.afl>
+#include <Lot_Sizes.afl>	
 #include <Title.afl>	
 system = 1; //Use 1 or 2 for shorter and longer term trend following
 
@@ -43,7 +57,6 @@ Plot(swingHighForEntry, "Bullish Entry", colorGreen, styleLine, Null, Null, 0, 0
 Plot(swingLowForExit, "Bullish Exit", colorRed, styleDashed, Null, Null, 0, 0, -1);
 Plot(swingLowForEntry, "Bearish Entry", colorRed, styleLine, Null, Null, 0, 0, -1);
 Plot(swingHighForExit, "Bearish Exit", colorGreen, styleDashed, Null, Null, 0, 0, -1);
-//Plot(Volume, "Volume", colorDefault, styleBar);
 
 volatility = EMA(ATR(1), 20);
 entry = IIf(Bullish, swingHighForEntry, IIf(Bearish, swingLowForEntry, Null));
@@ -51,21 +64,23 @@ exit = IIf(Bullish, swingLowForExit, IIf(Bearish, swingHighForExit, Null));
 twoNStop = IIf(Bullish, C - 2 * volatility, IIf(Bearish, C + 2 * volatility, 0));
 
 Trend = WriteIf(Bullish, "Bullish", WriteIf(Bearish, "Bearish", "No Trend"));
-AddColumn(Close, "Close", formatWithPrecision, colorDefault, dynamicColor);
+AddColumn(Close, "Close", getFormatWithPrecision(), colorDefault, dynamicColor);
 AddTextColumn(Trend, "Trend");
-AddColumn(entry, "Entry", formatWithPrecision, colorDefault, dynamicColor);
-AddColumn(exit, "Exit", formatWithPrecision, colorDefault, dynamicColor);
-AddColumn(volatility, "20 period EMA ATR", formatWithPrecision, colorDefault, colorDefault);
+AddColumn(entry, "Entry", getFormatWithPrecision(), colorDefault, dynamicColor);
+AddColumn(exit, "Exit", getFormatWithPrecision(), colorDefault, dynamicColor);
+AddColumn(volatility, "20 period EMA ATR", getFormatWithPrecision(), colorDefault, colorDefault);
 AddColumn(getLotSize(Name()), "Lot Size", 1.0, colorDefault, colorDefault);
-AddColumn(volatility * 2 * getLotSize(Name()), "Risk", 1.0, colorDefault, colorDefault);
-AddColumn(twoNStop, "2N Stop", formatWithPrecision, colorDefault, dynamicColor);
+AddColumn(abs((exit - Close) * getLotSize(Name())), "Risk", 1.0, colorDefault, colorDefault);
+AddColumn(volatility * 2 * getLotSize(Name()), "2N Risk", 1.0, colorDefault, colorDefault);
+AddColumn(twoNStop, "2N Stop", getFormatWithPrecision(), colorDefault, dynamicColor);
 
 titleSecondRow = "\n" 
-					+ "Bullish Entry - " + WriteVal(swingHighForEntry, formatWithPrecision, True)
-					+ ", Bullish Exit - " + WriteVal(swingLowForExit, formatWithPrecision, True)
-					+ ", Bearish Entry - " + WriteVal(swingLowForEntry, formatWithPrecision, True)
-					+ ", Bearish Exit - " + WriteVal(swingHighForExit, formatWithPrecision, True)
-					+ ", N - " + WriteVal(volatility, formatWithPrecision, True)
-					+ ", 2N - " + WriteVal(2 * volatility, formatWithPrecision, True);
+					+ "Bullish Entry - " + WriteVal(swingHighForEntry, getFormatWithPrecision(), True)
+					+ ", Bullish Exit - " + WriteVal(swingLowForExit, getFormatWithPrecision(), True)
+					+ ", Bearish Entry - " + WriteVal(swingLowForEntry, getFormatWithPrecision(), True)
+					+ ", Bearish Exit - " + WriteVal(swingHighForExit, getFormatWithPrecision(), True)
+					+ ", N - " + WriteVal(volatility, getFormatWithPrecision(), True)
+					+ ", 2N - " + WriteVal(2 * volatility, getFormatWithPrecision(), True);
 
 Title = titleFirstRow + titleSecondRow;
+_SECTION_END();
